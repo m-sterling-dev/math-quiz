@@ -43,19 +43,24 @@
                         🎯
                     </div>
                 </div>
-                <div class="bg-white/10 rounded-xl p-3 flex justify-between text-center">
+                <div class="bg-white/10 rounded-xl p-3 flex justify-around text-center">
                     <div>
-                        <div id="stat-total" class="text-xl font-extrabold">0</div>
+                        <div id="stat-total" class="text-lg font-extrabold">0</div>
                         <div class="text-[10px] text-emerald-100">总题库</div>
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
-                        <div id="stat-wrong" class="text-xl font-extrabold text-amber-200">0</div>
+                        <div id="stat-pending" class="text-lg font-extrabold text-cyan-200">0</div>
+                        <div class="text-[10px] text-emerald-100">待做题</div>
+                    </div>
+                    <div class="border-r border-white/20"></div>
+                    <div>
+                        <div id="stat-wrong" class="text-lg font-extrabold text-amber-200">0</div>
                         <div class="text-[10px] text-emerald-100">错题本</div>
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
-                        <div id="stat-accuracy" class="text-xl font-extrabold">100%</div>
+                        <div id="stat-accuracy" class="text-lg font-extrabold">100%</div>
                         <div class="text-[10px] text-emerald-100">正确率</div>
                     </div>
                 </div>
@@ -64,50 +69,65 @@
             <!-- 四大核心模式入口 -->
             <div class="grid grid-cols-2 gap-3.5 pt-2">
                 <!-- 顺序练习 -->
-                <button onclick="startPractice('sequential')" class="bg-white hover:bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-32">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <button onclick="startPractice('sequential')" class="bg-white hover:bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-28">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                         📑
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-800 text-base">顺序练习</h3>
-                        <p class="text-[11px] text-slate-400">稳扎稳打，逐题通关</p>
+                        <h3 class="font-bold text-slate-800 text-sm">顺序练习</h3>
+                        <p class="text-[10px] text-slate-400">稳扎稳打，逐题通关</p>
                     </div>
                 </button>
 
                 <!-- 随机练习 -->
-                <button onclick="startPractice('random')" class="bg-white hover:bg-teal-50 border-2 border-teal-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-32">
-                    <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-xl font-bold group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                <button onclick="startPractice('random')" class="bg-white hover:bg-teal-50 border-2 border-teal-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-28">
+                    <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-lg font-bold group-hover:bg-teal-600 group-hover:text-white transition-colors">
                         🎲
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-800 text-base">随机练习</h3>
-                        <p class="text-[11px] text-slate-400">打乱顺序，灵活测试</p>
+                        <h3 class="font-bold text-slate-800 text-sm">随机练习</h3>
+                        <p class="text-[10px] text-slate-400">打乱顺序，灵活测试</p>
                     </div>
                 </button>
 
-                <!-- 专项练习 -->
-                <button onclick="startPractice('special')" class="bg-white hover:bg-cyan-50 border-2 border-cyan-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-32">
-                    <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-xl font-bold group-hover:bg-cyan-600 group-hover:text-white transition-colors">
-                        🧩
+                <!-- 待做题练习 -->
+                <button onclick="startPractice('pending')" class="bg-white hover:bg-cyan-50 border-2 border-cyan-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-28 relative">
+                    <div id="pending-badge" class="absolute top-3 right-3 bg-cyan-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold hidden">0题</div>
+                    <div class="w-9 h-9 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-lg font-bold group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                        ⏳
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-800 text-base">专项练习</h3>
-                        <p class="text-[11px] text-slate-400">按考点、题型精准攻克</p>
+                        <h3 class="font-bold text-slate-800 text-sm">待做题库</h3>
+                        <p class="text-[10px] text-slate-400">攻克跳过、未做题目</p>
                     </div>
                 </button>
 
                 <!-- 错题练习 -->
-                <button onclick="startPractice('wrong')" class="bg-white hover:bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-32 relative">
+                <button onclick="startPractice('wrong')" class="bg-white hover:bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-28 relative">
                     <div id="wrong-badge" class="absolute top-3 right-3 bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold hidden">0题</div>
-                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                    <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg font-bold group-hover:bg-amber-600 group-hover:text-white transition-colors">
                         💡
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-800 text-base">错题练习</h3>
-                        <p class="text-[11px] text-slate-400">错题消灭，攻克盲区</p>
+                        <h3 class="font-bold text-slate-800 text-sm">错题练习</h3>
+                        <p class="text-[10px] text-slate-400">错题消灭，攻克盲区</p>
                     </div>
                 </button>
             </div>
+
+            <!-- 专项练习入口栏 -->
+            <button onclick="startPractice('special')" class="w-full bg-white hover:bg-purple-50 border-2 border-purple-100 p-3.5 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg font-bold group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                        🧩
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm">专项练习</h3>
+                        <p class="text-[10px] text-slate-400">按知识点分类精准攻克</p>
+                    </div>
+                </div>
+                <span class="text-xs text-purple-600 font-bold bg-purple-50 px-3 py-1 rounded-full">进入 ➡</span>
+            </button>
         </div>
 
         <!-- ================= 答题面板 ================= -->
@@ -140,26 +160,32 @@
                     加载中...
                 </div>
 
-                <!-- 选项容器 (针对选择题) -->
-                <div id="options-container" class="space-y-2.5 pt-2">
-                    <!-- 动态生成选项 -->
-                </div>
+                <!-- 选项容器 (选择题) -->
+                <div id="options-container" class="space-y-2.5 pt-2"></div>
 
-                <!-- 填空/解答输入容器（支持多空独立框） -->
-                <div id="input-container" class="pt-2 space-y-3">
-                    <!-- 动态生成独立输入框 -->
-                </div>
+                <!-- 填空输入容器 (多空独立框) -->
+                <div id="input-container" class="pt-2 space-y-3"></div>
 
-                <!-- 提交按钮 -->
-                <button id="submit-btn" onclick="submitAnswer()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all transform active:scale-95 text-base">
-                    提交答案
-                </button>
+                <!-- 提交与翻页/跳过按钮组 -->
+                <div class="space-y-2 pt-2">
+                    <button id="submit-btn" onclick="submitAnswer()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all transform active:scale-95 text-base">
+                        提交答案
+                    </button>
+
+                    <!-- 上一题 / 跳过按钮栏 -->
+                    <div id="nav-action-bar" class="flex gap-2">
+                        <button onclick="prevQuestion()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-all">
+                            ⬅ 上一题
+                        </button>
+                        <button onclick="skipQuestion()" class="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold py-2.5 rounded-xl text-xs transition-all border border-amber-200">
+                            ⏳ 不会做，先跳过
+                        </button>
+                    </div>
+                </div>
 
                 <!-- 解析与反馈区块 (默认隐藏) -->
                 <div id="feedback-panel" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
-                    <div id="result-status" class="font-extrabold text-lg flex items-center gap-2">
-                        <!-- 回答正确/错误提示 -->
-                    </div>
+                    <div id="result-status" class="font-extrabold text-lg flex items-center gap-2"></div>
                     <div class="bg-slate-50 p-3.5 rounded-xl space-y-1.5">
                         <div class="text-xs font-bold text-slate-500">正确答案：</div>
                         <div id="correct-answer-text" class="text-sm font-bold text-emerald-700"></div>
@@ -181,9 +207,7 @@
                 <h3 class="font-extrabold text-lg text-slate-800">选择练习专项</h3>
                 <button onclick="backToHome()" class="text-xs text-slate-400 font-bold">关闭</button>
             </div>
-            <div id="category-list" class="space-y-2.5">
-                <!-- 动态生成分类按钮 -->
-            </div>
+            <div id="category-list" class="space-y-2.5"></div>
         </div>
 
         <!-- ================= 练习完成结算视图 ================= -->
@@ -223,7 +247,6 @@
     </footer>
 
     <script>
-        // 内置数学题库（基于第二单元综合练习提取）
         const questionBank = [
             {
                 id: "q1",
@@ -384,10 +407,49 @@
                 answer: "74",
                 answersArray: ["74"],
                 explanation: "1. 错误顺序算式为：9 × (□ - 7) = 18。2. 括号内 (□ - 7) = 18 ÷ 9 = 2。3. 可知方框内数字 □ = 2 + 7 = 9。4. 正确计算：9 × 9 - 7 = 81 - 7 = 74。"
+            },
+            {
+                id: "q17",
+                tag: "填空题",
+                category: "不等式与括号填数",
+                question: "下面括号里最大能填几？ （    ） × 5 - 3 < 32",
+                type: "fill",
+                answer: "6",
+                answersArray: ["6"],
+                explanation: "设括号内为x，则 x×5 < 32 + 3，即 x×5 < 35。因为 7×5=35，要小于35最大只能填6（6×5=30，30-3=27 < 32；若填7则 7×5-3=32，不满足小于32）。"
+            },
+            {
+                id: "q18",
+                tag: "填空题",
+                category: "不等式与括号填数",
+                question: "下面括号里最大能填几？ 76 > （    ） × 9 - 3",
+                type: "fill",
+                answer: "8",
+                answersArray: ["8"],
+                explanation: "原式等价于 x×9 - 3 < 76，即 x×9 < 79。因为 8×9=72（72-3=69 < 76），9×9=81（81-3=78 > 76），所以x最大能填8。"
+            },
+            {
+                id: "q19",
+                tag: "填空题",
+                category: "不等式与括号填数",
+                question: "下面括号里最大能填几？ （    ） × 4 + 4 < 30",
+                type: "fill",
+                answer: "6",
+                answersArray: ["6"],
+                explanation: "设括号内为x，则 x×4 < 30 - 4，即 x×4 < 26。因为 6×4=24（24+4=28 < 30），7×4=28（28+4=32 > 30），所以x最大能填6。"
+            },
+            {
+                id: "q20",
+                tag: "填空题",
+                category: "不等式与括号填数",
+                question: "下面括号里最大能填几？ 38 > （    ） × 8 - 3",
+                type: "fill",
+                answer: "5",
+                answersArray: ["5"],
+                explanation: "原式等价于 x×8 - 3 < 38，即 x×8 < 41。因为 5×8=40（40-3=37 < 38），6×8=48（48-3=45 > 38），所以x最大能填5。"
             }
         ];
 
-        // 应用状态管理
         let currentMode = 'sequential'; 
         let currentQuizList = [];
         let currentIndex = 0;
@@ -396,6 +458,7 @@
 
         let wrongBook = JSON.parse(localStorage.getItem('math_wrong_book') || '[]');
         let masteredBook = JSON.parse(localStorage.getItem('math_mastered_book') || '[]');
+        let pendingBook = JSON.parse(localStorage.getItem('math_pending_book') || '[]');
 
         window.onload = function() {
             updateHomeStats();
@@ -404,18 +467,27 @@
         function updateHomeStats() {
             document.getElementById('stat-total').innerText = questionBank.length;
             document.getElementById('stat-wrong').innerText = wrongBook.length;
+            document.getElementById('stat-pending').innerText = pendingBook.length;
             document.getElementById('stat-mastered').innerText = masteredBook.length;
             
             const totalAnswered = masteredBook.length + wrongBook.length;
             const accuracy = totalAnswered > 0 ? Math.round((masteredBook.length / totalAnswered) * 100) : 100;
             document.getElementById('stat-accuracy').innerText = accuracy + '%';
 
-            const badge = document.getElementById('wrong-badge');
+            const wrongBadge = document.getElementById('wrong-badge');
             if (wrongBook.length > 0) {
-                badge.innerText = wrongBook.length + '题';
-                badge.classList.remove('hidden');
+                wrongBadge.innerText = wrongBook.length + '题';
+                wrongBadge.classList.remove('hidden');
             } else {
-                badge.classList.add('hidden');
+                wrongBadge.classList.add('hidden');
+            }
+
+            const pendingBadge = document.getElementById('pending-badge');
+            if (pendingBook.length > 0) {
+                pendingBadge.innerText = pendingBook.length + '题';
+                pendingBadge.classList.remove('hidden');
+            } else {
+                pendingBadge.classList.add('hidden');
             }
         }
 
@@ -431,10 +503,17 @@
                 showSpecialCategories();
             } else if (mode === 'wrong') {
                 if (wrongBook.length === 0) {
-                    showToast("太棒了！错题本空空如也，无需复习！");
+                    showToast("太棒了！错题本空空如也！");
                     return;
                 }
                 currentQuizList = questionBank.filter(q => wrongBook.includes(q.id));
+                beginQuizSession();
+            } else if (mode === 'pending') {
+                if (pendingBook.length === 0) {
+                    showToast("太棒了！没有未做的待做题！");
+                    return;
+                }
+                currentQuizList = questionBank.filter(q => pendingBook.includes(q.id));
                 beginQuizSession();
             }
         }
@@ -494,9 +573,11 @@
             const inputContainer = document.getElementById('input-container');
             const feedbackPanel = document.getElementById('feedback-panel');
             const submitBtn = document.getElementById('submit-btn');
+            const navActionBar = document.getElementById('nav-action-bar');
 
             feedbackPanel.classList.add('hidden');
             submitBtn.classList.remove('hidden');
+            navActionBar.classList.remove('hidden');
 
             if (q.type === 'choice') {
                 optionsContainer.classList.remove('hidden');
@@ -514,7 +595,6 @@
                 inputContainer.classList.remove('hidden');
                 inputContainer.innerHTML = '';
 
-                // 解析当前题目需要几个空
                 const answersNeeded = q.answer.split(';');
                 answersNeeded.forEach((_, idx) => {
                     const wrapper = document.createElement('div');
@@ -527,7 +607,6 @@
                     const input = document.createElement('input');
                     input.type = 'text';
                     input.id = `user-answer-input-${idx}`;
-                    input.dataset.blankIndex = idx;
                     input.placeholder = `请输入答案...`;
                     input.className = 'fill-blank-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none text-base font-medium';
                     
@@ -545,6 +624,26 @@
             });
             btnElement.classList.add('border-emerald-600', 'bg-emerald-50', 'text-emerald-800');
             selectedOptionValue = val;
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadQuestion();
+            } else {
+                showToast("已经是第一题啦！");
+            }
+        }
+
+        function skipQuestion() {
+            const q = currentQuizList[currentIndex];
+            if (!pendingBook.includes(q.id)) {
+                pendingBook.push(q.id);
+                localStorage.setItem('math_pending_book', JSON.stringify(pendingBook));
+            }
+            updateHomeStats();
+            showToast("已跳过，该题已收入“待做题库”");
+            nextQuestion();
         }
 
         function submitAnswer() {
@@ -574,7 +673,6 @@
                     return;
                 }
 
-                // 精准匹配多空答案（分号隔离）
                 const correctAnswers = q.answer.split(';');
                 if (userAnswers.length === correctAnswers.length) {
                     isCorrect = userAnswers.every((userVal, idx) => {
@@ -593,6 +691,7 @@
 
         function showFeedback(isCorrect, q) {
             document.getElementById('submit-btn').classList.add('hidden');
+            document.getElementById('nav-action-bar').classList.add('hidden');
             const feedbackPanel = document.getElementById('feedback-panel');
             feedbackPanel.classList.remove('hidden');
 
@@ -600,9 +699,13 @@
             const correctTextEl = document.getElementById('correct-answer-text');
             const explanationEl = document.getElementById('explanation-text');
 
-            // 格式化展示正确答案（将分号替换为可读的空格分割）
             correctTextEl.innerText = q.answer.split(';').join('  |  ');
             explanationEl.innerText = q.explanation;
+
+            if (pendingBook.includes(q.id)) {
+                pendingBook = pendingBook.filter(id => id !== q.id);
+                localStorage.setItem('math_pending_book', JSON.stringify(pendingBook));
+            }
 
             if (isCorrect) {
                 scoreCorrect++;

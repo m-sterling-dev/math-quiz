@@ -145,9 +145,9 @@
                     <!-- 动态生成选项 -->
                 </div>
 
-                <!-- 填空/解答输入容器 -->
-                <div id="input-container" class="pt-2">
-                    <input type="text" id="user-answer-input" placeholder="请输入你的答案..." class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none text-base">
+                <!-- 填空/解答输入容器（支持多空独立框） -->
+                <div id="input-container" class="pt-2 space-y-3">
+                    <!-- 动态生成独立输入框 -->
                 </div>
 
                 <!-- 提交按钮 -->
@@ -262,7 +262,7 @@
                 question: "计算 63 - 28 ÷ 4 时，应先算（        ）法；计算（31 – 23） × 7时，应先算（        ）法。",
                 type: "fill",
                 answer: "除;减",
-                answersArray: ["除,减", "除；减", "除法,减法", "除法；减法"],
+                answersArray: ["除;减", "除法;减法"],
                 explanation: "1. 63-28÷4含有减法和除法，先算除法。2. （31-23）×7含有小括号，优先算括号内的减法。"
             },
             {
@@ -281,9 +281,9 @@
                 category: "应用题列综合算式",
                 question: "三（3）班有女生25人，男生20人，共有学生（ ）人。如果每5人一组做实验，可以分（ ）组。列综合算式解答是（ ）",
                 type: "fill",
-                answer: "(25+20)÷5;45;9",
-                answersArray: ["(25+20)÷5=9", "(25+20)÷5", "45和9"],
-                explanation: "总人数 = 25+20 = 45人。分组数 = 总人数÷5 = (25+20)÷5 = 9组。"
+                answer: "45;9;(25+20)÷5",
+                answersArray: ["45", "9", "(25+20)÷5"],
+                explanation: "总人数 = 25+20 = 45人。分组数 = 总人数÷5 = (25+20)÷5 = 9组。综合算式为 (25+20)÷5。"
             },
             {
                 id: "q7",
@@ -352,7 +352,7 @@
                 question: "把下面算式合并成综合算式并计算： 6 × 7 = 42 ， 42 – 15 = 27",
                 type: "fill",
                 answer: "6×7-15=27",
-                answersArray: ["6×7-15=27", "6×7-15", "27"],
+                answersArray: ["6×7-15=27", "6×7-15"],
                 explanation: "将第一个算式代入第二个算式中：6×7 - 15 = 42 - 15 = 27。"
             },
             {
@@ -362,7 +362,7 @@
                 question: "水果店上午卖了 9 篮苹果，下午卖了 4 篮苹果。每篮苹果 9 元。上午比下午多卖了多少元？",
                 type: "fill",
                 answer: "45",
-                answersArray: ["45", "45元", "(9-4)×9=45"],
+                answersArray: ["45", "45元"],
                 explanation: "方法一：(9-4)×9 = 5×9 = 45元。方法二：9×9 - 4×9 = 81 - 36 = 45元。"
             },
             {
@@ -381,29 +381,26 @@
                 category: "思维拓展与逆推",
                 question: "明明在计算 ‘9 × □ - 7’ 时弄错了运算顺序，他先算减法再算乘法，结果是 18。正确的得数应该是多少？",
                 type: "fill",
-                answer: "65",
-                answersArray: ["65"],
-                explanation: "1. 错误顺序算式为：9 × (□ - 7) = 18。2. 括号内 (□ - 7) = 18 ÷ 9 = 2。3. 可知方框内数字 □ = 2 + 7 = 9。4. 正确计算：9 × 9 - 7 = 81 - 7 = 74... 等等，注意原题：9×□-7，若先算减法即 9×(□-7)=18，解得□=9。代入正确算式：9×9 - 7 = 74。若结果按原题意核对：正确答案为 74。"
+                answer: "74",
+                answersArray: ["74"],
+                explanation: "1. 错误顺序算式为：9 × (□ - 7) = 18。2. 括号内 (□ - 7) = 18 ÷ 9 = 2。3. 可知方框内数字 □ = 2 + 7 = 9。4. 正确计算：9 × 9 - 7 = 81 - 7 = 74。"
             }
         ];
 
         // 应用状态管理
-        let currentMode = 'sequential'; // 'sequential', 'random', 'special', 'wrong'
+        let currentMode = 'sequential'; 
         let currentQuizList = [];
         let currentIndex = 0;
         let scoreCorrect = 0;
         let scoreWrong = 0;
 
-        // 本地错题本与掌握题库存储
         let wrongBook = JSON.parse(localStorage.getItem('math_wrong_book') || '[]');
         let masteredBook = JSON.parse(localStorage.getItem('math_mastered_book') || '[]');
 
-        // 初始化加载
         window.onload = function() {
             updateHomeStats();
         };
 
-        // 更新主页统计数据
         function updateHomeStats() {
             document.getElementById('stat-total').innerText = questionBank.length;
             document.getElementById('stat-wrong').innerText = wrongBook.length;
@@ -422,7 +419,6 @@
             }
         }
 
-        // 启动练习模式
         function startPractice(mode) {
             currentMode = mode;
             if (mode === 'sequential') {
@@ -443,7 +439,6 @@
             }
         }
 
-        // 显示专项选择界面
         function showSpecialCategories() {
             const categories = [...new Set(questionBank.map(q => q.category))];
             const listEl = document.getElementById('category-list');
@@ -466,7 +461,6 @@
             document.getElementById('view-special-categories').classList.remove('hidden');
         }
 
-        // 开始答题会话
         function beginQuizSession() {
             if (currentQuizList.length === 0) {
                 showToast("当前题库暂无题目！");
@@ -484,7 +478,6 @@
             loadQuestion();
         }
 
-        // 加载当前题目
         function loadQuestion() {
             const q = currentQuizList[currentIndex];
             document.getElementById('current-index').innerText = currentIndex + 1;
@@ -519,7 +512,29 @@
             } else {
                 optionsContainer.classList.add('hidden');
                 inputContainer.classList.remove('hidden');
-                document.getElementById('user-answer-input').value = '';
+                inputContainer.innerHTML = '';
+
+                // 解析当前题目需要几个空
+                const answersNeeded = q.answer.split(';');
+                answersNeeded.forEach((_, idx) => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'relative flex items-center gap-2';
+                    
+                    const label = document.createElement('span');
+                    label.className = 'text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-2 rounded-lg whitespace-nowrap min-w-[65px] text-center';
+                    label.innerText = answersNeeded.length > 1 ? `第 ${idx + 1} 空` : `你的答案`;
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = `user-answer-input-${idx}`;
+                    input.dataset.blankIndex = idx;
+                    input.placeholder = `请输入答案...`;
+                    input.className = 'fill-blank-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none text-base font-medium';
+                    
+                    wrapper.appendChild(label);
+                    wrapper.appendChild(input);
+                    inputContainer.appendChild(wrapper);
+                });
             }
         }
 
@@ -532,39 +547,50 @@
             selectedOptionValue = val;
         }
 
-        // 提交答案判断
         function submitAnswer() {
             const q = currentQuizList[currentIndex];
-            let userAns = "";
+            let isCorrect = false;
 
             if (q.type === 'choice') {
                 if (!selectedOptionValue) {
                     showToast("请先选择一个选项哦！");
                     return;
                 }
-                userAns = selectedOptionValue;
+                isCorrect = selectedOptionValue.includes(q.answer) || q.answer.includes(selectedOptionValue);
                 selectedOptionValue = null;
             } else {
-                userAns = document.getElementById('user-answer-input').value.trim();
-                if (!userAns) {
-                    showToast("请输入您的答案！");
+                const inputs = document.querySelectorAll('.fill-blank-input');
+                let userAnswers = [];
+                let hasEmpty = false;
+
+                inputs.forEach(input => {
+                    const val = input.value.trim();
+                    if (!val) hasEmpty = true;
+                    userAnswers.push(val);
+                });
+
+                if (hasEmpty) {
+                    showToast("请填写完所有空格再提交哦！");
                     return;
                 }
-            }
 
-            // 判断对错逻辑
-            let isCorrect = false;
-            if (q.type === 'choice') {
-                isCorrect = userAns.includes(q.answer) || q.answer.includes(userAns);
-            } else {
-                // 支持多答案匹配
-                isCorrect = q.answersArray.some(ans => userAns.replace(/\s+/g, '') === ans.replace(/\s+/g, ''));
+                // 精准匹配多空答案（分号隔离）
+                const correctAnswers = q.answer.split(';');
+                if (userAnswers.length === correctAnswers.length) {
+                    isCorrect = userAnswers.every((userVal, idx) => {
+                        const target = correctAnswers[idx].replace(/\s+/g, '');
+                        const source = userVal.replace(/\s+/g, '');
+                        return source === target || (q.answersArray && q.answersArray.some(ans => ans.replace(/\s+/g, '') === source));
+                    });
+                } else {
+                    const joinedUser = userAnswers.join('');
+                    isCorrect = q.answersArray.some(ans => joinedUser.replace(/\s+/g, '') === ans.replace(/\s+/g, ''));
+                }
             }
 
             showFeedback(isCorrect, q);
         }
 
-        // 展示反馈与解析
         function showFeedback(isCorrect, q) {
             document.getElementById('submit-btn').classList.add('hidden');
             const feedbackPanel = document.getElementById('feedback-panel');
@@ -574,14 +600,14 @@
             const correctTextEl = document.getElementById('correct-answer-text');
             const explanationEl = document.getElementById('explanation-text');
 
-            correctTextEl.innerText = q.answer;
+            // 格式化展示正确答案（将分号替换为可读的空格分割）
+            correctTextEl.innerText = q.answer.split(';').join('  |  ');
             explanationEl.innerText = q.explanation;
 
             if (isCorrect) {
                 scoreCorrect++;
                 statusEl.innerHTML = `<span class="text-emerald-600 flex items-center gap-1.5">✅ 回答正确！太棒啦！</span>`;
                 
-                // 如果答对，自动从错题本移除（错题消灭机制）
                 if (wrongBook.includes(q.id)) {
                     wrongBook = wrongBook.filter(id => id !== q.id);
                     localStorage.setItem('math_wrong_book', JSON.stringify(wrongBook));
@@ -591,7 +617,6 @@
                     localStorage.setItem('math_mastered_book', JSON.stringify(masteredBook));
                 }
 
-                // 触发礼花动画
                 if (typeof confetti === 'function') {
                     confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
                 }
@@ -599,12 +624,10 @@
                 scoreWrong++;
                 statusEl.innerHTML = `<span class="text-rose-500 flex items-center gap-1.5">❌ 回答错误，再接再厉！</span>`;
                 
-                // 错题收录进错题本
                 if (!wrongBook.includes(q.id)) {
                     wrongBook.push(q.id);
                     localStorage.setItem('math_wrong_book', JSON.stringify(wrongBook));
                 }
-                // 从已掌握中移除
                 masteredBook = masteredBook.filter(id => id !== q.id);
                 localStorage.setItem('math_mastered_book', JSON.stringify(masteredBook));
             }
@@ -612,7 +635,6 @@
             updateHomeStats();
         }
 
-        // 下一题或结束
         function nextQuestion() {
             currentIndex++;
             if (currentIndex < currentQuizList.length) {
@@ -622,7 +644,6 @@
             }
         }
 
-        // 展示结算面板
         function showResultView() {
             document.getElementById('view-quiz').classList.add('hidden');
             document.getElementById('view-result').classList.remove('hidden');
@@ -639,7 +660,6 @@
             }
         }
 
-        // 返回主页
         function backToHome() {
             document.getElementById('view-quiz').classList.add('hidden');
             document.getElementById('view-special-categories').classList.add('hidden');
@@ -648,7 +668,6 @@
             updateHomeStats();
         }
 
-        // 简易弹窗提示
         function showToast(msg) {
             const toast = document.createElement('div');
             toast.className = 'fixed top-6 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg z-50 transition-opacity duration-300';

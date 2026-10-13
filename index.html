@@ -16,6 +16,15 @@
         .card-shadow {
             box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 0 8px 10px -6px rgba(16, 185, 129, 0.1);
         }
+        .clickable-stat {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .clickable-stat:hover {
+            transform: translateY(-2px);
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6">
@@ -32,7 +41,7 @@
         
         <!-- ================= 模式选择主页 ================= -->
         <div id="view-home" class="space-y-4">
-            <!-- 统计总览卡片 -->
+            <!-- 统计总览卡片 (全面支持点击交互) -->
             <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-6 text-white card-shadow">
                 <div class="flex justify-between items-center mb-4">
                     <div>
@@ -43,32 +52,32 @@
                         🎯
                     </div>
                 </div>
+                <!-- 4个可点击跳转的统计格子 -->
                 <div class="bg-white/10 rounded-xl p-3 flex justify-around text-center">
-                    <div>
+                    <div onclick="handleStatClick('total')" class="clickable-stat px-2 py-1">
                         <div id="stat-total" class="text-lg font-extrabold">0</div>
-                        <div class="text-[10px] text-emerald-100">总题库</div>
+                        <div class="text-[10px] text-emerald-100">总题库 ➡</div>
                     </div>
                     <div class="border-r border-white/20"></div>
-                    <div>
+                    <div onclick="handleStatClick('pending')" class="clickable-stat px-2 py-1">
                         <div id="stat-pending" class="text-lg font-extrabold text-cyan-200">0</div>
-                        <div class="text-[10px] text-emerald-100">待做题</div>
+                        <div class="text-[10px] text-emerald-100">待做题 ➡</div>
                     </div>
                     <div class="border-r border-white/20"></div>
-                    <div>
+                    <div onclick="handleStatClick('wrong')" class="clickable-stat px-2 py-1">
                         <div id="stat-wrong" class="text-lg font-extrabold text-amber-200">0</div>
-                        <div class="text-[10px] text-emerald-100">错题本</div>
+                        <div class="text-[10px] text-emerald-100">错题本 ➡</div>
                     </div>
                     <div class="border-r border-white/20"></div>
-                    <div>
-                        <div id="stat-accuracy" class="text-lg font-extrabold">100%</div>
-                        <div class="text-[10px] text-emerald-100">正确率</div>
+                    <div onclick="handleStatClick('challenge')" class="clickable-stat px-2 py-1">
+                        <div id="stat-accuracy" class="text-lg font-extrabold text-yellow-200">100%</div>
+                        <div class="text-[10px] text-yellow-100 font-bold">🔥 挑战 ➡</div>
                     </div>
                 </div>
             </div>
 
             <!-- 四大核心模式入口 -->
             <div class="grid grid-cols-2 gap-3.5 pt-2">
-                <!-- 顺序练习 -->
                 <button onclick="startPractice('sequential')" class="bg-white hover:bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-28">
                     <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                         📑
@@ -79,7 +88,6 @@
                     </div>
                 </button>
 
-                <!-- 随机练习 -->
                 <button onclick="startPractice('random')" class="bg-white hover:bg-teal-50 border-2 border-teal-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-28">
                     <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-lg font-bold group-hover:bg-teal-600 group-hover:text-white transition-colors">
                         🎲
@@ -90,7 +98,6 @@
                     </div>
                 </button>
 
-                <!-- 待做题练习 -->
                 <button onclick="startPractice('pending')" class="bg-white hover:bg-cyan-50 border-2 border-cyan-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-28 relative">
                     <div id="pending-badge" class="absolute top-3 right-3 bg-cyan-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold hidden">0题</div>
                     <div class="w-9 h-9 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-lg font-bold group-hover:bg-cyan-600 group-hover:text-white transition-colors">
@@ -102,7 +109,6 @@
                     </div>
                 </button>
 
-                <!-- 错题练习 -->
                 <button onclick="startPractice('wrong')" class="bg-white hover:bg-amber-50 border-2 border-amber-100 p-4 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex flex-col justify-between h-28 relative">
                     <div id="wrong-badge" class="absolute top-3 right-3 bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold hidden">0题</div>
                     <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg font-bold group-hover:bg-amber-600 group-hover:text-white transition-colors">
@@ -128,6 +134,34 @@
                 </div>
                 <span class="text-xs text-purple-600 font-bold bg-purple-50 px-3 py-1 rounded-full">进入 ➡</span>
             </button>
+        </div>
+
+        <!-- ================= 挑战难度选择弹窗 ================= -->
+        <div id="view-challenge-modal" class="hidden bg-white rounded-3xl p-6 card-shadow space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-2">🔥 选择智能变种挑战难度</h3>
+                <button onclick="backToHome()" class="text-xs text-slate-400 font-bold">关闭</button>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">
+                系统将基于当前题库自动生成变种数字与升级条件，全面锻炼举一反三的数学思维！
+            </p>
+            <div class="space-y-3 pt-2">
+                <button onclick="startChallenge('advanced')" class="w-full text-left bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 p-4 rounded-2xl transition-all group">
+                    <div class="flex justify-between items-center">
+                        <span class="font-extrabold text-emerald-800 text-base">🟢 进阶挑战（标准变种）</span>
+                        <span class="text-xs bg-emerald-200 text-emerald-900 px-2.5 py-1 rounded-full font-bold">难度 +10%</span>
+                    </div>
+                    <p class="text-xs text-emerald-700 mt-1">题型与原题一致，变换数字与参数，考察基本运算。</p>
+                </button>
+
+                <button onclick="startChallenge('ultimate')" class="w-full text-left bg-purple-50 hover:bg-purple-100 border-2 border-purple-300 p-4 rounded-2xl transition-all group">
+                    <div class="flex justify-between items-center">
+                        <span class="font-extrabold text-purple-800 text-base">🟣 终极挑战（深度变种）</span>
+                        <span class="text-xs bg-purple-200 text-purple-900 px-2.5 py-1 rounded-full font-bold">难度 +30%</span>
+                    </div>
+                    <p class="text-xs text-purple-700 mt-1">深度改编应用场景与逆向思维链，向满分发起冲击！</p>
+                </button>
+            </div>
         </div>
 
         <!-- ================= 答题面板 ================= -->
@@ -172,7 +206,6 @@
                         提交答案
                     </button>
 
-                    <!-- 上一题 / 跳过按钮栏 -->
                     <div id="nav-action-bar" class="flex gap-2">
                         <button onclick="prevQuestion()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-all">
                             ⬅ 上一题
@@ -183,7 +216,7 @@
                     </div>
                 </div>
 
-                <!-- 解析与反馈区块 (默认隐藏) -->
+                <!-- 解析与反馈区块 -->
                 <div id="feedback-panel" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
                     <div id="result-status" class="font-extrabold text-lg flex items-center gap-2"></div>
                     <div class="bg-slate-50 p-3.5 rounded-xl space-y-1.5">
@@ -416,7 +449,7 @@
                 type: "fill",
                 answer: "6",
                 answersArray: ["6"],
-                explanation: "设括号内为x，则 x×5 < 32 + 3，即 x×5 < 35。因为 7×5=35，要小于35最大只能填6（6×5=30，30-3=27 < 32；若填7则 7×5-3=32，不满足小于32）。"
+                explanation: "设括号内为x，则 x×5 < 32 + 3，即 x×5 < 35。因为 7×5=35，要小于35最大只能填6。"
             },
             {
                 id: "q18",
@@ -426,7 +459,7 @@
                 type: "fill",
                 answer: "8",
                 answersArray: ["8"],
-                explanation: "原式等价于 x×9 - 3 < 76，即 x×9 < 79。因为 8×9=72（72-3=69 < 76），9×9=81（81-3=78 > 76），所以x最大能填8。"
+                explanation: "原式等价于 x×9 - 3 < 76，即 x×9 < 79。因为 8×9=72，所以x最大能填8。"
             },
             {
                 id: "q19",
@@ -436,7 +469,7 @@
                 type: "fill",
                 answer: "6",
                 answersArray: ["6"],
-                explanation: "设括号内为x，则 x×4 < 30 - 4，即 x×4 < 26。因为 6×4=24（24+4=28 < 30），7×4=28（28+4=32 > 30），所以x最大能填6。"
+                explanation: "设括号内为x，则 x×4 < 26，6×4=24，所以x最大能填6。"
             },
             {
                 id: "q20",
@@ -446,7 +479,7 @@
                 type: "fill",
                 answer: "5",
                 answersArray: ["5"],
-                explanation: "原式等价于 x×8 - 3 < 38，即 x×8 < 41。因为 5×8=40（40-3=37 < 38），6×8=48（48-3=45 > 38），所以x最大能填5。"
+                explanation: "原式等价于 x×8 < 41，5×8=40，所以x最大能填5。"
             }
         ];
 
@@ -460,36 +493,19 @@
         let masteredBook = [];
         let pendingBook = [];
 
-        // 核心：带自动缓存版本校验与异常自愈的初始化逻辑
         window.onload = function() {
-            const CURRENT_VERSION = "v2.1_autoclean";
-            const savedVersion = localStorage.getItem('math_app_version');
-
-            if (savedVersion !== CURRENT_VERSION) {
-                // 如果版本不一致（说明更新了代码或缓存错乱），自动清空旧脏数据并升级版本
+            const CURRENT_VERSION = "v2.2_challenge";
+            if (localStorage.getItem('math_app_version') !== CURRENT_VERSION) {
                 localStorage.removeItem('math_wrong_book');
                 localStorage.removeItem('math_mastered_book');
                 localStorage.removeItem('math_pending_book');
                 localStorage.setItem('math_app_version', CURRENT_VERSION);
             }
 
-            // 获取所有合法题目的 ID 集合
             const validIds = questionBank.map(q => q.id);
-
-            // 安全加载并过滤错题本（只保留当前题库中真实存在的题目 ID）
-            const rawWrong = JSON.parse(localStorage.getItem('math_wrong_book') || '[]');
-            wrongBook = rawWrong.filter(id => validIds.includes(id));
-            localStorage.setItem('math_wrong_book', JSON.stringify(wrongBook));
-
-            // 安全加载并过滤已掌握题库
-            const rawMastered = JSON.parse(localStorage.getItem('math_mastered_book') || '[]');
-            masteredBook = rawMastered.filter(id => validIds.includes(id));
-            localStorage.setItem('math_mastered_book', JSON.stringify(masteredBook));
-
-            // 安全加载并过滤待做题库
-            const rawPending = JSON.parse(localStorage.getItem('math_pending_book') || '[]');
-            pendingBook = rawPending.filter(id => validIds.includes(id));
-            localStorage.setItem('math_pending_book', JSON.stringify(pendingBook));
+            wrongBook = JSON.parse(localStorage.getItem('math_wrong_book') || '[]').filter(id => validIds.includes(id));
+            masteredBook = JSON.parse(localStorage.getItem('math_mastered_book') || '[]').filter(id => validIds.includes(id));
+            pendingBook = JSON.parse(localStorage.getItem('math_pending_book') || '[]').filter(id => validIds.includes(id));
 
             updateHomeStats();
         };
@@ -519,6 +535,64 @@
             } else {
                 pendingBadge.classList.add('hidden');
             }
+        }
+
+        // 核心：点击顶部统计卡片跳转
+        function handleStatClick(type) {
+            if (type === 'total') {
+                startPractice('sequential');
+            } else if (type === 'pending') {
+                startPractice('pending');
+            } else if (type === 'wrong') {
+                startPractice('wrong');
+            } else if (type === 'challenge') {
+                showChallengeModal();
+            }
+        }
+
+        function showChallengeModal() {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-challenge-modal').classList.remove('hidden');
+        }
+
+        // 智能变种题生成引擎
+        function startChallenge(level) {
+            document.getElementById('view-challenge-modal').classList.add('hidden');
+            currentMode = 'challenge_' + level;
+
+            // 随机抽取 5 道题进行智能变种
+            let basePool = [...questionBank].sort(() => Math.random() - 0.5).slice(0, 5);
+            
+            currentQuizList = basePool.map((q, idx) => {
+                let newQ = JSON.parse(JSON.stringify(q)); // 深拷贝
+                newQ.id = 'ch_' + level + '_' + idx;
+                newQ.tag = level === 'advanced' ? '🟢 进阶变种题' : '🟣 终极变种题';
+
+                if (level === 'advanced') {
+                    // 进阶变种：对数字进行微调或增加系数
+                    if (q.id === 'q1') {
+                        newQ.question = "32比5个6多（        ）。60减去28的差除以4得（        ）。";
+                        newQ.answer = "2;8";
+                        newQ.answersArray = ["2", "8"];
+                        newQ.explanation = "1. 5个6是30，32比30多2。2. 60减28得32，32除以4得8。";
+                    } else if (q.id === 'q2') {
+                        newQ.question = "81加上81除以9的商，和是（        ）。";
+                        newQ.answer = "90";
+                        newQ.answersArray = ["90"];
+                        newQ.explanation = "先算除法：81÷9 = 9，再算加法：81 + 9 = 90。";
+                    } else {
+                        // 通用变种提示
+                        newQ.question = "[变种训练] " + q.question;
+                    }
+                } else {
+                    // 终极变种：加大难度与综合逻辑
+                    newQ.question = "[终极挑战] " + q.question + " (注意运算陷阱哦！)";
+                }
+
+                return newQ;
+            });
+
+            beginQuizSession();
         }
 
         function startPractice(mode) {
@@ -580,6 +654,7 @@
             scoreWrong = 0;
 
             document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-challenge-modal').classList.add('hidden');
             document.getElementById('view-special-categories').classList.add('hidden');
             document.getElementById('view-result').classList.add('hidden');
             document.getElementById('view-quiz').classList.remove('hidden');
@@ -667,7 +742,7 @@
 
         function skipQuestion() {
             const q = currentQuizList[currentIndex];
-            if (!pendingBook.includes(q.id)) {
+            if (!q.id.startsWith('ch_') && !pendingBook.includes(q.id)) {
                 pendingBook.push(q.id);
                 localStorage.setItem('math_pending_book', JSON.stringify(pendingBook));
             }
@@ -746,37 +821,49 @@
             correctTextEl.innerText = q.answer.split(';').join('  |  ');
             explanationEl.innerText = q.explanation;
 
-            if (pendingBook.includes(q.id)) {
-                pendingBook = pendingBook.filter(id => id !== q.id);
-                localStorage.setItem('math_pending_book', JSON.stringify(pendingBook));
-            }
-
-            if (isCorrect) {
-                scoreCorrect++;
-                statusEl.innerHTML = `<span class="text-emerald-600 flex items-center gap-1.5">✅ 回答正确！太棒啦！</span>`;
-                
-                if (wrongBook.includes(q.id)) {
-                    wrongBook = wrongBook.filter(id => id !== q.id);
-                    localStorage.setItem('math_wrong_book', JSON.stringify(wrongBook));
+            // 如果非挑战题目，清理待做和错题
+            if (!q.id.startsWith('ch_')) {
+                if (pendingBook.includes(q.id)) {
+                    pendingBook = pendingBook.filter(id => id !== q.id);
+                    localStorage.setItem('math_pending_book', JSON.stringify(pendingBook));
                 }
-                if (!masteredBook.includes(q.id)) {
-                    masteredBook.push(q.id);
+
+                if (isCorrect) {
+                    scoreCorrect++;
+                    statusEl.innerHTML = `<span class="text-emerald-600 flex items-center gap-1.5">✅ 回答正确！太棒啦！</span>`;
+                    if (wrongBook.includes(q.id)) {
+                        wrongBook = wrongBook.filter(id => id !== q.id);
+                        localStorage.setItem('math_wrong_book', JSON.stringify(wrongBook));
+                    }
+                    if (!masteredBook.includes(q.id)) {
+                        masteredBook.push(q.id);
+                        localStorage.setItem('math_mastered_book', JSON.stringify(masteredBook));
+                    }
+                    if (typeof confetti === 'function') {
+                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                    }
+                } else {
+                    scoreWrong++;
+                    statusEl.innerHTML = `<span class="text-rose-500 flex items-center gap-1.5">❌ 回答错误，再接再厉！</span>`;
+                    if (!wrongBook.includes(q.id)) {
+                        wrongBook.push(q.id);
+                        localStorage.setItem('math_wrong_book', JSON.stringify(wrongBook));
+                    }
+                    masteredBook = masteredBook.filter(id => id !== q.id);
                     localStorage.setItem('math_mastered_book', JSON.stringify(masteredBook));
                 }
-
-                if (typeof confetti === 'function') {
-                    confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-                }
             } else {
-                scoreWrong++;
-                statusEl.innerHTML = `<span class="text-rose-500 flex items-center gap-1.5">❌ 回答错误，再接再厉！</span>`;
-                
-                if (!wrongBook.includes(q.id)) {
-                    wrongBook.push(q.id);
-                    localStorage.setItem('math_wrong_book', JSON.stringify(wrongBook));
+                // 挑战题目不计入常规错题本，但记录分数
+                if (isCorrect) {
+                    scoreCorrect++;
+                    statusEl.innerHTML = `<span class="text-emerald-600 flex items-center gap-1.5">✅ 挑战变种题正确！太厉害啦！</span>`;
+                    if (typeof confetti === 'function') {
+                        confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+                    }
+                } else {
+                    scoreWrong++;
+                    statusEl.innerHTML = `<span class="text-rose-500 flex items-center gap-1.5">❌ 挑战变种题错误，加油！</span>`;
                 }
-                masteredBook = masteredBook.filter(id => id !== q.id);
-                localStorage.setItem('math_mastered_book', JSON.stringify(masteredBook));
             }
 
             updateHomeStats();
@@ -809,6 +896,7 @@
 
         function backToHome() {
             document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-challenge-modal').classList.add('hidden');
             document.getElementById('view-special-categories').classList.add('hidden');
             document.getElementById('view-result').classList.add('hidden');
             document.getElementById('view-home').classList.remove('hidden');

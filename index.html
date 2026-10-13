@@ -41,7 +41,7 @@
         
         <!-- ================= 模式选择主页 ================= -->
         <div id="view-home" class="space-y-4">
-            <!-- 统计总览卡片 (全面支持点击交互) -->
+            <!-- 统计总览卡片 -->
             <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-6 text-white card-shadow">
                 <div class="flex justify-between items-center mb-4">
                     <div>
@@ -69,9 +69,10 @@
                         <div class="text-[10px] text-emerald-100">错题本 ➡</div>
                     </div>
                     <div class="border-r border-white/20"></div>
+                    <!-- 恢复为“正确率”，点击进入变种挑战 -->
                     <div onclick="handleStatClick('challenge')" class="clickable-stat px-2 py-1">
                         <div id="stat-accuracy" class="text-lg font-extrabold text-yellow-200">100%</div>
-                        <div class="text-[10px] text-yellow-100 font-bold">🔥 挑战 ➡</div>
+                        <div class="text-[10px] text-emerald-100 font-bold">正确率 ➡</div>
                     </div>
                 </div>
             </div>
@@ -121,7 +122,7 @@
                 </button>
             </div>
 
-            <!-- 专项练习入口栏 -->
+            <!-- 专项练习入口 -->
             <button onclick="startPractice('special')" class="w-full bg-white hover:bg-purple-50 border-2 border-purple-100 p-3.5 rounded-2xl text-left transition-all transform active:scale-95 group card-shadow flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg font-bold group-hover:bg-purple-600 group-hover:text-white transition-colors">
@@ -134,6 +135,58 @@
                 </div>
                 <span class="text-xs text-purple-600 font-bold bg-purple-50 px-3 py-1 rounded-full">进入 ➡</span>
             </button>
+
+            <!-- ➕ 新增：录入新题入口（手动/拍照识别录入） -->
+            <button onclick="showAddQuestionModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-2xl text-center font-bold text-sm shadow-md transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                <span>➕</span> 手动 / 拍照录入新错题
+            </button>
+        </div>
+
+        <!-- ================= 新增题目弹窗 ================= -->
+        <div id="view-add-question-modal" class="hidden bg-white rounded-3xl p-6 card-shadow space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-1.5">📝 录入新题目到题库</h3>
+                <button onclick="backToHome()" class="text-xs text-slate-400 font-bold">关闭</button>
+            </div>
+
+            <div class="space-y-3 text-xs font-semibold text-slate-700">
+                <div>
+                    <label class="block mb-1 text-slate-500">题型选择：</label>
+                    <select id="new-q-type" class="w-full p-2.5 border-2 border-slate-200 rounded-xl bg-white focus:border-emerald-500 focus:outline-none font-bold">
+                        <option value="fill">填空题</option>
+                        <option value="choice">选择题</option>
+                        <option value="fill">计算题</option>
+                        <option value="fill">应用题</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-500">知识点分类：</label>
+                    <input type="text" id="new-q-category" placeholder="例：混合运算与运算顺序" value="自定义新增错题" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-slate-500">题目内容：</label>
+                        <span class="text-[10px] text-emerald-600">💡 iPad可长按文本栏使用“扫描文本”</span>
+                    </div>
+                    <textarea id="new-q-question" rows="3" placeholder="请输入或拍照粘贴题目内容..." class="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-500">标准答案（若多空请用分号 ; 隔开）：</label>
+                    <input type="text" id="new-q-answer" placeholder="例：45;9;(25+20)÷5" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-500">解析与口诀：</label>
+                    <textarea id="new-q-explanation" rows="2" placeholder="请输入详细步骤和口诀，方便复习..." class="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none"></textarea>
+                </div>
+
+                <button onclick="saveNewQuestion()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-all shadow-md text-sm mt-2">
+                    保存并加入总题库 💾
+                </button>
+            </div>
         </div>
 
         <!-- ================= 挑战难度选择弹窗 ================= -->
@@ -280,7 +333,7 @@
     </footer>
 
     <script>
-        const questionBank = [
+        const initialQuestionBank = [
             {
                 id: "q1",
                 tag: "填空题",
@@ -483,6 +536,7 @@
             }
         ];
 
+        let questionBank = [];
         let currentMode = 'sequential'; 
         let currentQuizList = [];
         let currentIndex = 0;
@@ -494,13 +548,9 @@
         let pendingBook = [];
 
         window.onload = function() {
-            const CURRENT_VERSION = "v2.2_challenge";
-            if (localStorage.getItem('math_app_version') !== CURRENT_VERSION) {
-                localStorage.removeItem('math_wrong_book');
-                localStorage.removeItem('math_mastered_book');
-                localStorage.removeItem('math_pending_book');
-                localStorage.setItem('math_app_version', CURRENT_VERSION);
-            }
+            // 支持用户自定义扩充题库
+            const customQuestions = JSON.parse(localStorage.getItem('math_custom_questions') || '[]');
+            questionBank = [...initialQuestionBank, ...customQuestions];
 
             const validIds = questionBank.map(q => q.id);
             wrongBook = JSON.parse(localStorage.getItem('math_wrong_book') || '[]').filter(id => validIds.includes(id));
@@ -537,7 +587,6 @@
             }
         }
 
-        // 核心：点击顶部统计卡片跳转
         function handleStatClick(type) {
             if (type === 'total') {
                 startPractice('sequential');
@@ -550,26 +599,67 @@
             }
         }
 
+        function showAddQuestionModal() {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-add-question-modal').classList.remove('hidden');
+        }
+
+        function saveNewQuestion() {
+            const qType = document.getElementById('new-q-type').value;
+            const category = document.getElementById('new-q-category').value.trim() || '自定义新增错题';
+            const questionText = document.getElementById('new-q-question').value.trim();
+            const answerText = document.getElementById('new-q-answer').value.trim();
+            const explanationText = document.getElementById('new-q-explanation').value.trim() || '暂无解析步骤。';
+
+            if (!questionText || !answerText) {
+                showToast("请填写完整的题目和答案！");
+                return;
+            }
+
+            const tagMap = { fill: '填空题', choice: '选择题' };
+            const newQ = {
+                id: 'custom_' + Date.now(),
+                tag: tagMap[qType] || '填空题',
+                category: category,
+                question: questionText,
+                type: qType,
+                answer: answerText,
+                answersArray: answerText.split(';'),
+                explanation: explanationText
+            };
+
+            const customQuestions = JSON.parse(localStorage.getItem('math_custom_questions') || '[]');
+            customQuestions.push(newQ);
+            localStorage.setItem('math_custom_questions', JSON.stringify(customQuestions));
+
+            questionBank.push(newQ);
+
+            // 清空输入框
+            document.getElementById('new-q-question').value = '';
+            document.getElementById('new-q-answer').value = '';
+            document.getElementById('new-q-explanation').value = '';
+
+            showToast("成功录入新题目！总题库已更新");
+            backToHome();
+        }
+
         function showChallengeModal() {
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-challenge-modal').classList.remove('hidden');
         }
 
-        // 智能变种题生成引擎
         function startChallenge(level) {
             document.getElementById('view-challenge-modal').classList.add('hidden');
             currentMode = 'challenge_' + level;
 
-            // 随机抽取 5 道题进行智能变种
             let basePool = [...questionBank].sort(() => Math.random() - 0.5).slice(0, 5);
             
             currentQuizList = basePool.map((q, idx) => {
-                let newQ = JSON.parse(JSON.stringify(q)); // 深拷贝
+                let newQ = JSON.parse(JSON.stringify(q));
                 newQ.id = 'ch_' + level + '_' + idx;
                 newQ.tag = level === 'advanced' ? '🟢 进阶变种题' : '🟣 终极变种题';
 
                 if (level === 'advanced') {
-                    // 进阶变种：对数字进行微调或增加系数
                     if (q.id === 'q1') {
                         newQ.question = "32比5个6多（        ）。60减去28的差除以4得（        ）。";
                         newQ.answer = "2;8";
@@ -581,11 +671,9 @@
                         newQ.answersArray = ["90"];
                         newQ.explanation = "先算除法：81÷9 = 9，再算加法：81 + 9 = 90。";
                     } else {
-                        // 通用变种提示
                         newQ.question = "[变种训练] " + q.question;
                     }
                 } else {
-                    // 终极变种：加大难度与综合逻辑
                     newQ.question = "[终极挑战] " + q.question + " (注意运算陷阱哦！)";
                 }
 
@@ -655,6 +743,7 @@
 
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-challenge-modal').classList.add('hidden');
+            document.getElementById('view-add-question-modal').classList.add('hidden');
             document.getElementById('view-special-categories').classList.add('hidden');
             document.getElementById('view-result').classList.add('hidden');
             document.getElementById('view-quiz').classList.remove('hidden');
@@ -821,7 +910,6 @@
             correctTextEl.innerText = q.answer.split(';').join('  |  ');
             explanationEl.innerText = q.explanation;
 
-            // 如果非挑战题目，清理待做和错题
             if (!q.id.startsWith('ch_')) {
                 if (pendingBook.includes(q.id)) {
                     pendingBook = pendingBook.filter(id => id !== q.id);
@@ -853,7 +941,6 @@
                     localStorage.setItem('math_mastered_book', JSON.stringify(masteredBook));
                 }
             } else {
-                // 挑战题目不计入常规错题本，但记录分数
                 if (isCorrect) {
                     scoreCorrect++;
                     statusEl.innerHTML = `<span class="text-emerald-600 flex items-center gap-1.5">✅ 挑战变种题正确！太厉害啦！</span>`;
@@ -897,6 +984,7 @@
         function backToHome() {
             document.getElementById('view-quiz').classList.add('hidden');
             document.getElementById('view-challenge-modal').classList.add('hidden');
+            document.getElementById('view-add-question-modal').classList.add('hidden');
             document.getElementById('view-special-categories').classList.add('hidden');
             document.getElementById('view-result').classList.add('hidden');
             document.getElementById('view-home').classList.remove('hidden');

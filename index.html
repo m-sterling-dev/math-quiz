@@ -25,6 +25,11 @@
             background-color: rgba(255, 255, 255, 0.2);
             border-radius: 12px;
         }
+        .quiz-img-container svg {
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6">
@@ -161,7 +166,7 @@
 
                 <div>
                     <label class="block mb-1 text-slate-500">知识点分类：</label>
-                    <input type="text" id="new-q-category" placeholder="例：混合运算与运算顺序" value="自定义新增错题" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none">
+                    <input type="text" id="new-q-category" placeholder="例：观察物体与思维拓展" value="观察物体与思维拓展" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none">
                 </div>
 
                 <div>
@@ -171,7 +176,7 @@
 
                 <div>
                     <label class="block mb-1 text-slate-500">标准答案（若多空请用分号 ; 隔开）：</label>
-                    <input type="text" id="new-q-answer" placeholder="例：45;9;(25+20)÷5" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none">
+                    <input type="text" id="new-q-answer" placeholder="例：6;4;5" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none">
                 </div>
 
                 <div>
@@ -238,10 +243,12 @@
                     <span id="quiz-id" class="text-xs text-slate-400 font-semibold">ID: #01</span>
                 </div>
 
-                <!-- 题目内容 -->
-                <div id="quiz-question" class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed min-h-[70px]">
+                <!-- 题目内容与图片矢量渲染容器 -->
+                <div id="quiz-question" class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed min-h-[50px]">
                     加载中...
                 </div>
+                
+                <div id="quiz-image-box" class="quiz-img-container hidden my-2 p-2 bg-slate-50 rounded-2xl border border-slate-100 flex justify-center items-center"></div>
 
                 <!-- 选项容器 (选择题) -->
                 <div id="options-container" class="space-y-2.5 pt-2"></div>
@@ -329,7 +336,50 @@
     </footer>
 
     <script>
+        const CUBE_SVG = `<svg viewBox="0 0 520 130" width="300" height="75" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="#1e293b" stroke-width="2.5" stroke-linejoin="round" fill="#cbe6f7">
+                <!-- Cube 1 -->
+                <polygon points="20,50 70,50 70,110 20,110" />
+                <polygon points="20,50 45,15 95,15 70,50" />
+                <polygon points="70,50 95,15 95,75 70,110" fill="#b1dae8" />
+                <text x="45" y="88" font-size="28" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle">1</text>
+                <text x="57" y="38" font-size="24" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle" transform="rotate(-15,57,38)">2</text>
+                <text x="83" y="70" font-size="24" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle">3</text>
+
+                <!-- Cube 2 -->
+                <g transform="translate(180,0)">
+                    <polygon points="20,50 70,50 70,110 20,110" />
+                    <polygon points="20,50 45,15 95,15 70,50" />
+                    <polygon points="70,50 95,15 95,75 70,110" fill="#b1dae8" />
+                    <text x="45" y="88" font-size="28" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle">4</text>
+                    <text x="57" y="38" font-size="24" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle" transform="rotate(-15,57,38)">1</text>
+                    <text x="83" y="70" font-size="24" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle">5</text>
+                </g>
+
+                <!-- Cube 3 -->
+                <g transform="translate(360,0)">
+                    <polygon points="20,50 70,50 70,110 20,110" />
+                    <polygon points="20,50 45,15 95,15 70,50" />
+                    <polygon points="70,50 95,15 95,75 70,110" fill="#b1dae8" />
+                    <text x="45" y="88" font-size="28" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle">6</text>
+                    <text x="57" y="38" font-size="24" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle" transform="rotate(-15,57,38)">5</text>
+                    <text x="83" y="70" font-size="24" font-family="sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle">3</text>
+                </g>
+            </g>
+        </svg>`;
+
         const initialQuestionBank = [
+            {
+                id: "q21",
+                tag: "思维拓展题",
+                category: "观察物体与空间逻辑",
+                question: "下图是一个正方体从不同角度看到的图片。1 的对面是（        ），3 的对面是（        ），2 的对面是（        ）。",
+                svgImage: CUBE_SVG,
+                type: "fill",
+                answer: "6;4;5",
+                answersArray: ["6", "4", "5"],
+                explanation: "1. 看数字 1：与 1 相邻的面有 2、3、4、5，排除后 1 的对面只能是 6。\n2. 看数字 3：与 3 相邻的面有 1、2、5、6，排除后 3 的对面是 4。\n3. 剩下的 2 与 5 相对。\n【口诀】：找相邻，定对面，排除四周剩对面！"
+            },
             {
                 id: "q1",
                 tag: "填空题",
@@ -544,6 +594,14 @@
         let pendingBook = [];
 
         window.onload = function() {
+            const CURRENT_VERSION = "v2.5_clean";
+            if (localStorage.getItem('math_app_version') !== CURRENT_VERSION) {
+                localStorage.removeItem('math_wrong_book');
+                localStorage.removeItem('math_mastered_book');
+                localStorage.removeItem('math_pending_book');
+                localStorage.setItem('math_app_version', CURRENT_VERSION);
+            }
+
             const customQuestions = JSON.parse(localStorage.getItem('math_custom_questions') || '[]');
             questionBank = [...initialQuestionBank, ...customQuestions];
 
@@ -642,7 +700,6 @@
             document.getElementById('view-challenge-modal').classList.remove('hidden');
         }
 
-        // 核心：真正的数字智能变种算法引擎
         function startChallenge(level) {
             document.getElementById('view-challenge-modal').classList.add('hidden');
             currentMode = 'challenge_' + level;
@@ -653,23 +710,20 @@
                 let newQ = JSON.parse(JSON.stringify(q));
                 newQ.id = 'ch_' + level + '_' + idx;
                 
-                // 动态提取并替换题目中的数字进行变种
                 let originalText = q.question;
                 let numbers = originalText.match(/\d+/g);
 
                 if (numbers && numbers.length > 0) {
-                    let offset = level === 'advanced' ? 2 : 5; // 进阶微调2，终极大幅变种5
+                    let offset = level === 'advanced' ? 2 : 5;
                     let mutatedText = originalText;
                     let numMap = {};
 
                     numbers.forEach(numStr => {
                         let originalNum = parseInt(numStr, 10);
-                        // 避免过小的数字变种出负数或0
                         let newNum = originalNum > 3 ? originalNum + offset : originalNum + 1;
                         numMap[originalNum] = newNum;
                     });
 
-                    // 智能替换文本中的数字
                     mutatedText = originalText.replace(/\d+/g, (match) => {
                         let val = parseInt(match, 10);
                         return numMap[val] !== undefined ? numMap[val] : val;
@@ -677,14 +731,13 @@
 
                     newQ.question = (level === 'advanced' ? "🟢 [进阶变种] " : "🟣 [终极变种] ") + mutatedText;
                     
-                    // 对应自动调整答案（针对基础数字运算进行简单等比/偏移推导）
                     let originalAnswers = q.answer.split(';');
                     let mutatedAnswers = originalAnswers.map(ans => {
                         let ansNum = parseInt(ans, 10);
                         if (!isNaN(ansNum)) {
                             return String(ansNum + offset);
                         }
-                        return ans; // 如果是非数字答案（如文字或复杂算式）保持原样或提示
+                        return ans;
                     });
 
                     newQ.answer = mutatedAnswers.join(';');
@@ -780,6 +833,15 @@
             document.getElementById('quiz-tag').innerText = q.tag;
             document.getElementById('quiz-id').innerText = `ID: #${q.id}`;
             document.getElementById('quiz-question').innerText = q.question;
+
+            const imgBox = document.getElementById('quiz-image-box');
+            if (q.svgImage) {
+                imgBox.innerHTML = q.svgImage;
+                imgBox.classList.remove('hidden');
+            } else {
+                imgBox.innerHTML = '';
+                imgBox.classList.add('hidden');
+            }
 
             const optionsContainer = document.getElementById('options-container');
             const inputContainer = document.getElementById('input-container');
